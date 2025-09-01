@@ -1,0 +1,133 @@
+{
+  "name": "communityos",
+  "version": "1.0.0",
+  "description": "Transform Discord communities into revenue-generating businesses",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "build": "npm run backend:build && npm run frontend:build",
+    "start": "npm run backend:start",
+    "test": "npm run backend:test && npm run frontend:test",
+    "test:unit": "npm run backend:test:unit && npm run frontend:test:unit",
+    "test:integration": "npm run backend:test:integration",
+    "test:e2e": "npm run frontend:test:e2e",
+    "test:coverage": "npm run backend:test:coverage && npm run frontend:test:coverage",
+    "lint": "npm run backend:lint && npm run frontend:lint",
+    "lint:fix": "npm run backend:lint:fix && npm run frontend:lint:fix",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "backend:dev": "cd backend && npm run dev",
+    "backend:build": "cd backend && npm run build",
+    "backend:start": "cd backend && npm run start",
+    "backend:test": "cd backend && npm test",
+    "backend:test:unit": "cd backend && npm run test:unit",
+    "backend:test:integration": "cd backend && npm run test:integration",
+    "backend:test:coverage": "cd backend && npm run test:coverage",
+    "backend:lint": "cd backend && npm run lint",
+    "backend:lint:fix": "cd backend && npm run lint:fix",
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "frontend:start": "cd frontend && npm start",
+    "frontend:test": "cd frontend && npm test",
+    "frontend:test:unit": "cd frontend && npm run test:unit",
+    "frontend:test:e2e": "cd frontend && npm run test:e2e",
+    "frontend:test:coverage": "cd frontend && npm run test:coverage",
+    "frontend:lint": "cd frontend && npm run lint",
+    "frontend:lint:fix": "cd frontend && npm run lint:fix",
+    "db:generate": "cd backend && npx prisma generate",
+    "db:migrate": "cd backend && npx prisma migrate dev",
+    "db:migrate:prod": "cd backend && npx prisma migrate deploy",
+    "db:seed": "cd backend && npx prisma db seed",
+    "db:studio": "cd backend && npx prisma studio",
+    "db:reset": "cd backend && npx prisma migrate reset",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:clean": "docker-compose down -v --rmi all --remove-orphans",
+    "deploy:staging": "npm run build && npm run deploy:staging:backend && npm run deploy:staging:frontend",
+    "deploy:prod": "npm run build && npm run deploy:prod:backend && npm run deploy:prod:frontend",
+    "deploy:staging:backend": "cd backend && npm run deploy:staging",
+    "deploy:prod:backend": "cd backend && npm run deploy:prod",
+    "deploy:staging:frontend": "cd frontend && npm run deploy:staging",
+    "deploy:prod:frontend": "cd frontend && npm run deploy:prod",
+    "security:audit": "npm audit && cd backend && npm audit && cd ../frontend && npm audit",
+    "security:fix": "npm audit fix && cd backend && npm audit fix && cd ../frontend && npm audit fix",
+    "docs:serve": "cd docs && npm run serve",
+    "docs:build": "cd docs && npm run build",
+    "postinstall": "npm run install:backend && npm run install:frontend && npm run db:generate",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "setup": "npm install && cp .env.example .env && npm run db:migrate && npm run db:seed",
+    "clean": "rm -rf node_modules backend/node_modules frontend/node_modules backend/dist frontend/.next",
+    "update": "npm update && cd backend && npm update && cd ../frontend && npm update",
+    "health": "npm run backend:health && npm run frontend:health",
+    "backend:health": "cd backend && npm run health",
+    "frontend:health": "cd frontend && npm run health"
+  },
+  "keywords": [
+    "discord",
+    "community",
+    "saas",
+    "monetization",
+    "subscription",
+    "billing",
+    "multi-tenant",
+    "bot",
+    "revenue"
+  ],
+  "author": "CommunityOS Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/CommunityOS.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/CommunityOS/issues"
+  },
+  "homepage": "https://communityos.com",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.54.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.1.0",
+    "prettier": "^3.1.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm run test"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "volta": {
+    "node": "20.10.0",
+    "npm": "10.2.3"
+  }
+}

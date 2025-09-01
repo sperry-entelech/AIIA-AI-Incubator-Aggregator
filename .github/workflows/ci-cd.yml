@@ -1,0 +1,403 @@
+name: CommunityOS CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  release:
+    types: [published]
+
+env:
+  NODE_VERSION: '20'
+  DOCKER_REGISTRY: ghcr.io
+  BACKEND_IMAGE_NAME: communityos-backend
+  FRONTEND_IMAGE_NAME: communityos-frontend
+
+jobs:
+  # =============================================================================
+  # Code Quality & Security
+  # =============================================================================
+  lint-and-test:
+    name: Code Quality & Testing
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: communityos_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd backend && npm ci
+          cd ../frontend && npm ci
+      
+      - name: Lint code
+        run: |
+          npm run lint
+          npm run format:check
+      
+      - name: Type check
+        run: |
+          cd backend && npm run type-check
+          cd ../frontend && npm run type-check
+      
+      - name: Run backend tests
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/communityos_test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test_jwt_secret_key_for_ci
+          NODE_ENV: test
+        run: |
+          cd backend
+          npx prisma migrate deploy
+          npm run test:coverage
+      
+      - name: Run frontend tests
+        run: |
+          cd frontend
+          npm run test:coverage
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./backend/coverage/lcov.info,./frontend/coverage/lcov.info
+          flags: backend,frontend
+          name: communityos-coverage
+  
+  # =============================================================================
+  # Security Scanning
+  # =============================================================================
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd backend && npm ci
+          cd ../frontend && npm ci
+      
+      - name: Run npm audit
+        run: |
+          npm audit --audit-level=high
+          cd backend && npm audit --audit-level=high
+          cd ../frontend && npm audit --audit-level=high
+      
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+      
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript
+      
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+  
+  # =============================================================================
+  # Build Docker Images
+  # =============================================================================
+  build-images:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs: [lint-and-test, security-scan]
+    if: github.event_name != 'pull_request'
+    
+    outputs:
+      backend-image: ${{ steps.meta-backend.outputs.tags }}
+      frontend-image: ${{ steps.meta-frontend.outputs.tags }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Login to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata for backend
+        id: meta-backend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_REGISTRY }}/${{ github.repository }}/${{ env.BACKEND_IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix=sha-
+      
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta-backend.outputs.tags }}
+          labels: ${{ steps.meta-backend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Extract metadata for frontend
+        id: meta-frontend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_REGISTRY }}/${{ github.repository }}/${{ env.FRONTEND_IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix=sha-
+      
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta-frontend.outputs.tags }}
+          labels: ${{ steps.meta-frontend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+  
+  # =============================================================================
+  # Deploy to Staging
+  # =============================================================================
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [build-images]
+    if: github.ref == 'refs/heads/develop'
+    environment:
+      name: staging
+      url: https://staging.communityos.com
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+      
+      - name: Deploy to staging
+        run: |
+          # Replace image tags in Kubernetes manifests
+          sed -i "s|BACKEND_IMAGE_TAG|${{ needs.build-images.outputs.backend-image }}|g" deployment/kubernetes/staging/backend.yaml
+          sed -i "s|FRONTEND_IMAGE_TAG|${{ needs.build-images.outputs.frontend-image }}|g" deployment/kubernetes/staging/frontend.yaml
+          
+          # Apply Kubernetes manifests
+          kubectl apply -f deployment/kubernetes/staging/
+          
+          # Wait for rollout to complete
+          kubectl rollout status deployment/communityos-backend-staging -n communityos-staging
+          kubectl rollout status deployment/communityos-frontend-staging -n communityos-staging
+      
+      - name: Run health checks
+        run: |
+          # Wait for services to be ready
+          sleep 30
+          
+          # Check backend health
+          BACKEND_URL=$(kubectl get service communityos-backend-staging -n communityos-staging -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          curl -f "https://${BACKEND_URL}/health" || exit 1
+          
+          # Check frontend health
+          FRONTEND_URL=$(kubectl get service communityos-frontend-staging -n communityos-staging -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          curl -f "https://${FRONTEND_URL}" || exit 1
+      
+      - name: Run E2E tests
+        run: |
+          cd frontend
+          npm run test:e2e -- --config baseURL=https://staging.communityos.com
+  
+  # =============================================================================
+  # Deploy to Production
+  # =============================================================================
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build-images]
+    if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+    environment:
+      name: production
+      url: https://communityos.com
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME_PROD }} --region ${{ secrets.AWS_REGION }}
+      
+      - name: Deploy to production
+        run: |
+          # Replace image tags in Kubernetes manifests
+          sed -i "s|BACKEND_IMAGE_TAG|${{ needs.build-images.outputs.backend-image }}|g" deployment/kubernetes/production/backend.yaml
+          sed -i "s|FRONTEND_IMAGE_TAG|${{ needs.build-images.outputs.frontend-image }}|g" deployment/kubernetes/production/frontend.yaml
+          
+          # Apply Kubernetes manifests
+          kubectl apply -f deployment/kubernetes/production/
+          
+          # Wait for rollout to complete
+          kubectl rollout status deployment/communityos-backend-prod -n communityos-prod
+          kubectl rollout status deployment/communityos-frontend-prod -n communityos-prod
+      
+      - name: Run health checks
+        run: |
+          # Wait for services to be ready
+          sleep 30
+          
+          # Check backend health
+          curl -f "https://api.communityos.com/health" || exit 1
+          
+          # Check frontend health
+          curl -f "https://communityos.com" || exit 1
+      
+      - name: Notify deployment success
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          channel: '#deployments'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          text: '🚀 CommunityOS successfully deployed to production!'
+        if: success()
+      
+      - name: Notify deployment failure
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          channel: '#deployments'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          text: '❌ CommunityOS deployment to production failed!'
+        if: failure()
+  
+  # =============================================================================
+  # Performance Testing
+  # =============================================================================
+  performance-test:
+    name: Performance Testing
+    runs-on: ubuntu-latest
+    needs: [deploy-staging]
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          configPath: './lighthouse.config.js'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+      
+      - name: Run load testing
+        run: |
+          # Install k6
+          curl https://github.com/grafana/k6/releases/download/v0.47.0/k6-v0.47.0-linux-amd64.tar.gz -L | tar xvz --strip-components 1
+          
+          # Run load tests
+          ./k6 run --vus 50 --duration 5m tests/load/api-load-test.js
+  
+  # =============================================================================
+  # Security Monitoring
+  # =============================================================================
+  security-monitoring:
+    name: Security Monitoring
+    runs-on: ubuntu-latest
+    needs: [deploy-production]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Run OWASP ZAP scan
+        uses: zaproxy/action-full-scan@v0.7.0
+        with:
+          target: 'https://communityos.com'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
+      
+      - name: Upload ZAP report
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-report
+          path: report_html.html
+        if: always()

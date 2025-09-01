@@ -1,0 +1,282 @@
+// This is your Prisma schema file
+// Learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =============================================================================
+// User Management
+// =============================================================================
+
+model User {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  discordId         String   @unique @map("discord_id") @db.VarChar(20)
+  username          String   @db.VarChar(100)
+  discriminator     String?  @db.VarChar(10)
+  email             String?  @db.VarChar(255)
+  avatarUrl         String?  @map("avatar_url")
+  globalName        String?  @map("global_name") @db.VarChar(100)
+  locale            String   @default("en-US") @db.VarChar(10)
+  premiumType       Int      @default(0) @map("premium_type")
+  isAdmin           Boolean  @default(false) @map("is_admin")
+  lastLogin         DateTime? @map("last_login") @db.Timestamptz(6)
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  ownedCommunities  Community[] @relation("CommunityOwner")
+  memberships       CommunityMember[]
+  apiKeys           ApiKey[]
+  auditLogs         AuditLog[]
+
+  @@map("users")
+}
+
+// =============================================================================
+// Community Management
+// =============================================================================
+
+model Community {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String   @db.VarChar(255)
+  slug              String   @unique @db.VarChar(100)
+  discordGuildId    String   @unique @map("discord_guild_id") @db.VarChar(20)
+  ownerId           String   @map("owner_id") @db.Uuid
+  description       String?
+  avatarUrl         String?  @map("avatar_url")
+  subscriptionTier  String   @default("free") @map("subscription_tier") @db.VarChar(50)
+  status            String   @default("active") @db.VarChar(20)
+  settings          Json     @default("{}")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  owner             User @relation("CommunityOwner", fields: [ownerId], references: [id])
+  members           CommunityMember[]
+  subscriptionTiers SubscriptionTier[]
+  subscriptions     Subscription[]
+  payments          Payment[]
+  botConfig         DiscordBotConfig?
+  analyticsEvents   AnalyticsEvent[]
+  auditLogs         AuditLog[]
+
+  @@map("communities")
+}
+
+model CommunityMember {
+  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  communityId          String    @map("community_id") @db.Uuid
+  userId               String    @map("user_id") @db.Uuid
+  discordUserId        String    @map("discord_user_id") @db.VarChar(20)
+  nickname             String?   @db.VarChar(100)
+  roles                String[]  @default([])
+  joinedAt             DateTime  @default(now()) @map("joined_at") @db.Timestamptz(6)
+  subscriptionStatus   String    @default("none") @map("subscription_status") @db.VarChar(20)
+  subscriptionTier     String?   @map("subscription_tier") @db.VarChar(50)
+  subscriptionExpiresAt DateTime? @map("subscription_expires_at") @db.Timestamptz(6)
+  totalSpent           Decimal   @default(0.00) @map("total_spent") @db.Decimal(10, 2)
+  isActive             Boolean   @default(true) @map("is_active")
+  createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  community     Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscriptions Subscription[]
+  payments      Payment[]
+
+  @@unique([communityId, userId])
+  @@map("community_members")
+}
+
+// =============================================================================
+// Subscription Management
+// =============================================================================
+
+model SubscriptionTier {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  communityId       String   @map("community_id") @db.Uuid
+  name              String   @db.VarChar(100)
+  description       String?
+  price             Decimal  @db.Decimal(10, 2)
+  currency          String   @default("USD") @db.VarChar(3)
+  interval          String   @db.VarChar(20) // monthly, yearly
+  stripePriceId     String?  @unique @map("stripe_price_id") @db.VarChar(100)
+  features          Json     @default("[]")
+  discordRoleId     String?  @map("discord_role_id") @db.VarChar(20)
+  maxMembers        Int?
+  isActive          Boolean  @default(true) @map("is_active")
+  sortOrder         Int      @default(0) @map("sort_order")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  community     Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  subscriptions Subscription[]
+
+  @@unique([communityId, name])
+  @@map("subscription_tiers")
+}
+
+model Subscription {
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  communityId            String    @map("community_id") @db.Uuid
+  memberId               String    @map("member_id") @db.Uuid
+  tierId                 String    @map("tier_id") @db.Uuid
+  stripeSubscriptionId   String?   @unique @map("stripe_subscription_id") @db.VarChar(100)
+  stripeCustomerId       String    @map("stripe_customer_id") @db.VarChar(100)
+  status                 String    @db.VarChar(20)
+  currentPeriodStart     DateTime  @map("current_period_start") @db.Timestamptz(6)
+  currentPeriodEnd       DateTime  @map("current_period_end") @db.Timestamptz(6)
+  cancelAtPeriodEnd      Boolean   @default(false) @map("cancel_at_period_end")
+  canceledAt             DateTime? @map("canceled_at") @db.Timestamptz(6)
+  trialStart             DateTime? @map("trial_start") @db.Timestamptz(6)
+  trialEnd               DateTime? @map("trial_end") @db.Timestamptz(6)
+  metadata               Json      @default("{}")
+  createdAt              DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  member    CommunityMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  tier      SubscriptionTier @relation(fields: [tierId], references: [id])
+  payments  Payment[]
+
+  @@map("subscriptions")
+}
+
+// =============================================================================
+// Payment Management
+// =============================================================================
+
+model Payment {
+  id                       String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  communityId              String    @map("community_id") @db.Uuid
+  memberId                 String    @map("member_id") @db.Uuid
+  subscriptionId           String?   @map("subscription_id") @db.Uuid
+  stripePaymentIntentId    String?   @unique @map("stripe_payment_intent_id") @db.VarChar(100)
+  stripeChargeId           String?   @map("stripe_charge_id") @db.VarChar(100)
+  amount                   Decimal   @db.Decimal(10, 2)
+  currency                 String    @db.VarChar(3)
+  status                   String    @db.VarChar(20)
+  description              String?
+  metadata                 Json      @default("{}")
+  processedAt              DateTime? @map("processed_at") @db.Timestamptz(6)
+  createdAt                DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  community    Community @relation(fields: [communityId], references: [id])
+  member       CommunityMember @relation(fields: [memberId], references: [id])
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
+
+  @@map("payments")
+}
+
+// =============================================================================
+// Discord Bot Configuration
+// =============================================================================
+
+model DiscordBotConfig {
+  id                         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  communityId                String    @unique @map("community_id") @db.Uuid
+  botTokenEncrypted          String    @map("bot_token_encrypted")
+  clientId                   String    @map("client_id") @db.VarChar(20)
+  permissions                BigInt
+  prefix                     String    @default("!") @db.VarChar(10)
+  welcomeMessage             String?   @map("welcome_message")
+  farewellMessage            String?   @map("farewell_message")
+  autoRoleAssignment         Boolean   @default(true) @map("auto_role_assignment")
+  paymentVerificationChannel String?   @map("payment_verification_channel") @db.VarChar(20)
+  adminChannel               String?   @map("admin_channel") @db.VarChar(20)
+  settings                   Json      @default("{}")
+  isActive                   Boolean   @default(true) @map("is_active")
+  lastOnline                 DateTime? @map("last_online") @db.Timestamptz(6)
+  createdAt                  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                  DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  @@map("discord_bot_configs")
+}
+
+// =============================================================================
+// Analytics & Events
+// =============================================================================
+
+model AnalyticsEvent {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  communityId   String   @map("community_id") @db.Uuid
+  eventType     String   @map("event_type") @db.VarChar(50)
+  eventName     String   @map("event_name") @db.VarChar(100)
+  userId        String?  @map("user_id") @db.Uuid
+  discordUserId String?  @map("discord_user_id") @db.VarChar(20)
+  properties    Json     @default("{}")
+  timestamp     DateTime @default(now()) @db.Timestamptz(6)
+  sessionId     String?  @map("session_id") @db.VarChar(100)
+  ipAddress     String?  @map("ip_address") @db.Inet
+  userAgent     String?  @map("user_agent")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // Relations
+  community Community @relation(fields: [communityId], references: [id])
+
+  @@index([communityId, timestamp(sort: Desc)])
+  @@index([eventType])
+  @@map("analytics_events")
+}
+
+// =============================================================================
+// API Keys & Authentication
+// =============================================================================
+
+model ApiKey {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  name        String    @db.VarChar(100)
+  keyHash     String    @unique @map("key_hash") @db.VarChar(255)
+  permissions String[]  @default([])
+  lastUsed    DateTime? @map("last_used") @db.Timestamptz(6)
+  expiresAt   DateTime? @map("expires_at") @db.Timestamptz(6)
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("api_keys")
+}
+
+// =============================================================================
+// Audit & Compliance
+// =============================================================================
+
+model AuditLog {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String?  @map("user_id") @db.Uuid
+  communityId String?  @map("community_id") @db.Uuid
+  action      String   @db.VarChar(100)
+  resource    String   @db.VarChar(100)
+  resourceId  String?  @map("resource_id") @db.Uuid
+  details     Json     @default("{}")
+  ipAddress   String?  @map("ip_address") @db.Inet
+  userAgent   String?  @map("user_agent")
+  timestamp   DateTime @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  user      User?      @relation(fields: [userId], references: [id])
+  community Community? @relation(fields: [communityId], references: [id])
+
+  @@index([userId, timestamp(sort: Desc)])
+  @@index([communityId, timestamp(sort: Desc)])
+  @@index([action])
+  @@map("audit_logs")
+}
