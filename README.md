@@ -1,287 +1,338 @@
-# 🚀 CommunityOS - Transform Discord Communities into Revenue Engines
+# 🎓 AIIA - AI Incubator & Aggregator
 
 <div align="center">
 
-![CommunityOS Logo](https://via.placeholder.com/400x100/6366f1/ffffff?text=CommunityOS)
+![AIIA Logo](https://via.placeholder.com/400x100/6366f1/ffffff?text=AIIA+-+AI+Incubator+%26+Aggregator)
 
-**The Complete SaaS Platform for Discord Community Monetization**
+**Recruit, Train, Vet, and Place AI Consultants for Enterprise Implementations**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
-[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
 [![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
-[🌟 **Live Demo**](https://communityos.io) • [📖 **Documentation**](./docs) • [🚀 **Quick Start**](#quick-start) • [💼 **Business Model**](#business-model)
+[🌟 **Overview**](#what-is-aiia) • [📖 **Documentation**](./docs) • [🚀 **Service Models**](#service-models) • [💼 **Ecosystem**](#the-entelech-ecosystem)
 
 </div>
 
 ---
 
-## 🎯 **What is CommunityOS?**
+## 🎯 **What is AIIA?**
 
-CommunityOS is a **multi-tenant SaaS platform** that transforms Discord communities into profitable, sustainable businesses. We enable community owners to monetize their audiences through **tiered subscriptions**, **training programs**, and **talent placement services**.
+**AIIA (AI Incubator & Aggregator)** is a talent platform that sources, trains, vets, and places AI consultants into client businesses for enterprise automation implementations. We bridge the gap between consulting engagements and qualified talent delivery.
 
 ### **The Problem We Solve**
-- 📊 **95% of Discord communities** struggle to generate sustainable revenue
-- 💸 **Community owners** spend 40+ hours/week managing members manually
-- 🔄 **No systematic way** to convert free members into paying customers
-- 📈 **Limited tools** for tracking member engagement and business metrics
+
+- 🔍 **Talent Shortage**: Clients need AI consultants who can implement complex agentic features alongside UX
+- 📚 **Skills Gap**: Many aspiring AI consultants lack practical implementation experience
+- ⚡ **Delivery Risk**: Agencies struggle to find trusted talent for client engagements
+- 💰 **Scaling Bottleneck**: Consulting firms can't grow without reliable implementation partners
 
 ### **Our Solution**
-CommunityOS provides a **complete business operating system** for Discord communities:
 
-✅ **Automated Member Management** - Role-based access, payment verification, engagement tracking  
-✅ **Subscription Revenue** - Multiple pricing tiers with automated billing and member lifecycle  
-✅ **Training Platform** - Course delivery, progress tracking, and certification systems  
-✅ **Talent Placement** - Job board, candidate matching, and placement fee revenue  
-✅ **Business Analytics** - Revenue tracking, member insights, and optimization recommendations  
-✅ **White-Label Ready** - Custom branding and subdomain for professional presentation  
+AIIA provides a **complete talent pipeline** from recruitment to placement:
 
----
-
-## 🏗️ **Platform Architecture**
-
-### **Multi-Tenant SaaS Foundation**
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Customer A    │    │   Customer B    │    │   Customer C    │
-│  (Discord Bot)  │    │  (Discord Bot)  │    │  (Discord Bot)  │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         └───────────────────────┼───────────────────────┘
-                                 │
-         ┌─────────────────────────────────────────────────┐
-         │           CommunityOS Platform Core             │
-         │  • Multi-Tenant Database (PostgreSQL)          │
-         │  • Authentication & Authorization (JWT)         │
-         │  • Payment Processing (Stripe)                  │
-         │  • Job Queue System (Redis/Bull)                │
-         │  • Real-time Updates (WebSockets)               │
-         └─────────────────────────────────────────────────┘
-```
-
-### **Tech Stack**
-- **Backend**: Node.js, Express, TypeScript, PostgreSQL, Redis
-- **Frontend**: Next.js 14, React, Tailwind CSS, shadcn/ui
-- **Discord**: Discord.js v14 with multi-tenant command handling
-- **Payments**: Stripe with Connect for revenue sharing
-- **Infrastructure**: Docker, PM2, Nginx, Digital Ocean/AWS
-- **Monitoring**: DataDog, Sentry, Uptime monitoring
+✅ **Talent Sourcing** - Recruit aspiring AI consultants and implementation specialists
+✅ **Training Programs** - Teach practical AI implementation skills (agents, UX integration, enterprise SaaS)
+✅ **Vetting & Certification** - Validate skills through real-world projects and KPI benchmarks
+✅ **Client Placement** - Match vetted talent with ENTELECH client engagements
+✅ **Quality Assurance** - Monitor performance and ensure KPI compliance
+✅ **Network Effects** - Build a trusted ecosystem of AI implementation specialists
 
 ---
 
-## 💰 **Business Model & Revenue Projections**
+## 🏗️ **The ENTELECH Ecosystem**
 
-### **SaaS Subscription Tiers**
-| Plan | Price/Month | Discord Members | Features | Target Market |
-|------|-------------|-----------------|----------|---------------|
-| **Starter** | $297 | Up to 1,000 | Basic automation, 2 subscription tiers | Small communities |
-| **Growth** | $697 | Up to 5,000 | Advanced features, unlimited tiers | Growing communities |
-| **Enterprise** | $1,497 | Unlimited | White-label, API access, priority support | Large agencies |
+AIIA is part of a three-entity business model that delivers end-to-end AI transformation:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    CLIENT ENGAGEMENT FLOW                        │
+└─────────────────────────────────────────────────────────────────┘
+         │
+         │  1. Client Acquisition & Scoping
+         ▼
+┌─────────────────┐
+│   ENTELECH      │  Consulting Agency
+│                 │  • Finds RevOps/consulting clients
+│  "The Agency"   │  • Sells scopes of work
+│                 │  • Manages client relationships
+│                 │  • Partnership agreements (revshare/equity)
+└─────────────────┘
+         │
+         │  2. Talent Request
+         ▼
+┌─────────────────┐
+│      AIIA       │  Talent Platform
+│                 │  • Sources AI consultants
+│  "The Network"  │  • Trains & vets candidates
+│                 │  • Places talent in client businesses
+│                 │  • Quality monitoring & KPIs
+└─────────────────┘
+         │
+         │  3. Implementation Support (when needed)
+         ▼
+┌─────────────────┐
+│    ECHELON      │  Software Platform
+│                 │  • Custom AI agents
+│  "The Platform" │  • Software builds
+│                 │  • Enterprise SaaS features
+│                 │  • Technical infrastructure
+└─────────────────┘
+```
+
+### **How the Ecosystem Works**
+
+1. **ENTELECH** identifies a client needing AI automation for their enterprise SaaS platform
+2. **AIIA** provides a vetted consultant who can either:
+   - **Implement directly** (DFY - Do For You)
+   - **Train in-house team** (DIY - Do It Yourself)
+   - **Hybrid consulting + support**
+3. **ECHELON** (optional) provides custom software/agents when needed
+4. **Revenue flows** through partnership agreements with revshare or equity splits
+
+---
+
+## 🎯 **Service Models**
+
+AIIA-placed consultants deliver three types of engagements:
+
+### **1. DFY (Do For You) - Implementation Services**
+- AIIA consultant implements the full scope of work
+- Client receives working AI systems
+- Consultant handles: architecture, development, testing, deployment
+- **Example**: Build custom AI agent for customer support automation
+
+### **2. DIY (Do It Yourself) - Training & Enablement**
+- AIIA consultant teaches client's in-house team
+- Knowledge transfer and capability building
+- Client team gains skills to maintain and extend systems
+- **Example**: Train client developers to build AI agents using Claude API
+
+### **3. Hybrid - Consulting + Implementation**
+- Combination of consulting guidance and hands-on implementation
+- AIIA consultant provides strategy + builds critical components
+- Client team handles ongoing maintenance
+- **Example**: Design AI architecture + implement core agents, client extends features
+
+---
+
+## 💰 **Business Model**
 
 ### **Revenue Streams**
-1. **SaaS Subscriptions**: $297-$1,497/month per customer
-2. **Revenue Commission**: 5-15% of customer subscription revenue
-3. **Placement Fees**: 25-50% of job placement commission
-4. **Enterprise Services**: Custom integrations, consulting, white-label
 
-### **Market Opportunity**
-- 📊 **Total Addressable Market**: $50B+ creator economy
-- 🎯 **Serviceable Market**: 500K+ Discord communities with 1,000+ members
-- 💎 **Target Market**: 50K communities ready for serious monetization
-- 🚀 **Revenue Projection**: $1.8M ARR by Year 1, $6M ARR by Year 3
+1. **Placement Fees**: Commission on consultant placements through ENTELECH engagements
+2. **Training Revenue**: Course fees from aspiring AI consultants
+3. **Partnership Splits**: Revshare or equity from ENTELECH client partnerships
+4. **Subscription Tiers**: Access to job board, training materials, certification programs
 
-### **Unit Economics**
-```
-Customer Acquisition Cost (CAC): $150
-Monthly Recurring Revenue (MRR): $697 (average)
-Customer Lifetime Value (LTV): $8,364
-LTV/CAC Ratio: 55:1
-Payback Period: 3.2 months
-```
+### **Value Proposition**
 
----
+**For Aspiring AI Consultants**:
+- 📚 Practical training in enterprise AI implementation
+- 💼 Access to high-value client engagements
+- 🏆 Certification and credibility building
+- 💰 Steady project pipeline through ENTELECH network
 
-## 🚀 **Quick Start**
+**For ENTELECH (The Agency)**:
+- 🚀 Scale client delivery without hiring full-time staff
+- ✅ Access to pre-vetted, trained talent
+- 📊 Quality assurance through KPI tracking
+- 🤝 Trusted network of implementation partners
 
-### **Prerequisites**
-- Node.js 18+ and npm
-- PostgreSQL 14+
-- Redis 6+
-- Discord Bot Token
-- Stripe Account
-
-### **1. Clone & Setup**
-```bash
-git clone https://github.com/yourusername/CommunityOS.git
-cd CommunityOS
-cp .env.example .env
-# Edit .env with your configuration
-```
-
-### **2. Install Dependencies**
-```bash
-# Install backend dependencies
-cd backend && npm install
-
-# Install frontend dependencies  
-cd ../frontend && npm install
-```
-
-### **3. Database Setup**
-```bash
-cd backend
-npm run db:migrate
-npm run db:seed
-```
-
-### **4. Development Environment**
-```bash
-# Start all services with Docker
-docker-compose up -d
-
-# Or run manually:
-cd backend && npm run dev
-cd frontend && npm run dev
-```
-
-### **5. Access the Platform**
-- **Platform Dashboard**: http://localhost:3000
-- **Customer Dashboard**: http://localhost:3001
-- **API Documentation**: http://localhost:3000/api/docs
-- **Admin Panel**: http://localhost:3000/admin
+**For Clients**:
+- ⚡ Fast access to qualified AI implementation specialists
+- 🎯 Flexibility: DFY, DIY, or Hybrid engagement models
+- 📈 Proven talent with validated skills and references
+- 🛡️ Quality guaranteed through AIIA vetting process
 
 ---
 
-## 🎯 **Key Features**
+## 🎓 **Training & Vetting Process**
 
-### **For Community Owners**
-- 🤖 **Discord Integration** - Seamless bot setup with role management
-- 💳 **Subscription Management** - Automated billing and member access control
-- 📚 **Training Platform** - Course creation, delivery, and certification
-- 💼 **Job Placement** - Talent matching and placement fee revenue
-- 📊 **Analytics Dashboard** - Revenue tracking and member insights
-- 🎨 **White-Label Branding** - Custom colors, logos, and domain
+### **Phase 1: Recruitment**
+- Source candidates interested in AI consulting
+- Screen for baseline technical skills
+- Assess learning capacity and communication skills
 
-### **For Discord Members**
-- 🔐 **Seamless Access** - Automatic role assignment based on subscription
-- 📖 **Training Content** - Progressive skill development with certificates
-- 💼 **Job Opportunities** - Exclusive job board with AI-powered matching
-- 🏆 **Gamification** - Points, badges, and leaderboards for engagement
-- 📱 **Mobile Experience** - Responsive design for all devices
+### **Phase 2: Training**
+- **Technical Skills**: Claude API, n8n, Zapier, Make, Airtable, custom agents
+- **Enterprise Context**: SaaS integration, UX parallel development, business process automation
+- **Soft Skills**: Client communication, scoping, project management
+- **Real-World Projects**: Hands-on implementations with feedback
+
+### **Phase 3: Vetting & Certification**
+- Complete portfolio project demonstrating AI implementation
+- KPI benchmarks: code quality, delivery time, client satisfaction simulation
+- Reference checks and peer reviews
+- AIIA certification upon successful completion
+
+### **Phase 4: Placement**
+- Match consultant skills to ENTELECH client needs
+- Supervised first engagement with mentorship
+- Ongoing performance monitoring and KPI tracking
+- Continuous learning and skill development
+
+---
+
+## 🏆 **Consultant Success Criteria**
+
+AIIA consultants are measured on:
+
+- ✅ **Technical Excellence**: Clean code, robust implementations, security best practices
+- ✅ **Delivery Velocity**: On-time project completion, efficient workflows
+- ✅ **Client Satisfaction**: Communication, responsiveness, business impact
+- ✅ **KPI Compliance**: Meets agreed-upon performance benchmarks
+- ✅ **Knowledge Transfer**: Effective training and documentation (for DIY/Hybrid)
+- ✅ **Continuous Learning**: Stays current with AI/automation technologies
+
+---
+
+## 🚀 **Platform Features**
+
+### **For Aspiring Consultants**
+- 📚 **Training Academy**: Structured curriculum for AI implementation skills
+- 💼 **Job Board**: Access to ENTELECH client engagements
+- 🏆 **Certification Programs**: Validate skills and build credibility
+- 📊 **Performance Dashboard**: Track KPIs and improvement areas
+- 🤝 **Mentor Network**: Learn from experienced AI consultants
+
+### **For ENTELECH Partners**
+- 🔍 **Talent Search**: Filter consultants by skills, experience, availability
+- 📋 **Vetting Reports**: Detailed background on consultant capabilities
+- 📊 **Performance Analytics**: Real-time KPI tracking for active placements
+- 🛡️ **Quality Assurance**: Escalation paths and consultant replacement if needed
+- 💰 **Revenue Tracking**: Commission and partnership split calculations
 
 ### **For Platform Operators**
-- 🏢 **Multi-Tenant Management** - Centralized customer and revenue management
-- 💰 **Revenue Tracking** - Real-time commission and fee calculations
-- 🔍 **Customer Success** - Health scoring and churn prediction
-- 🛡️ **Security & Compliance** - Enterprise-grade security and audit trails
-- 📈 **Platform Analytics** - Business intelligence and growth metrics
+- 🏢 **Talent Pipeline Management**: Recruitment, training, vetting workflows
+- 💰 **Revenue Operations**: Placement fees, training revenue, partnership accounting
+- 🔍 **Quality Control**: Consultant performance monitoring and improvement programs
+- 📈 **Platform Analytics**: Growth metrics, placement success rates, training effectiveness
+- 🤝 **Partner Management**: ENTELECH relationship and engagement coordination
 
 ---
 
-## 📊 **Success Stories & Market Validation**
+## 🛠️ **Tech Stack**
 
-### **Target Customer Profile**
-- **Community Size**: 1,000-10,000 Discord members
-- **Industry Focus**: Automation, Digital Marketing, SaaS, Crypto, Coaching
-- **Current Revenue**: $0-$50K/month (looking to scale)
-- **Pain Points**: Manual member management, payment processing, content delivery
-
-### **Projected Customer Outcomes**
-- ⚡ **10x Revenue Growth**: From $5K to $50K+ monthly recurring revenue
-- ⏰ **90% Time Savings**: Automated workflows replace manual processes
-- 📈 **3x Member Engagement**: Structured learning paths and gamification
-- 💼 **15+ Monthly Placements**: Sustainable placement fee revenue stream
+- **Backend**: Node.js, Express, TypeScript, PostgreSQL, Redis
+- **Frontend**: Next.js 14, React, Tailwind CSS, shadcn/ui
+- **Training Platform**: Course delivery system, progress tracking, certification
+- **Matching Engine**: Consultant-to-engagement pairing algorithms
+- **Payments**: Stripe for course fees, Wise/PayPal for consultant payments
+- **Infrastructure**: Docker, PM2, Nginx, Digital Ocean/AWS
+- **Monitoring**: Performance tracking, KPI dashboards, analytics
 
 ---
 
-## 🛠️ **Development**
+## 📊 **Market Opportunity**
 
-### **Project Structure**
-```
-CommunityOS/
-├── backend/                 # Node.js API server
-│   ├── src/
-│   │   ├── api/            # REST API routes
-│   │   ├── discord/        # Discord bot engine
-│   │   ├── models/         # Database models
-│   │   ├── services/       # Business logic
-│   │   └── utils/          # Utilities
-│   ├── migrations/         # Database migrations
-│   └── tests/              # Backend tests
-├── frontend/               # Next.js dashboard
-│   ├── src/
-│   │   ├── app/           # App router pages
-│   │   ├── components/    # React components
-│   │   ├── hooks/         # Custom hooks
-│   │   └── store/         # State management
-├── docs/                  # Documentation
-├── deployment/            # Docker & K8s configs
-└── scripts/               # Utility scripts
-```
+### **Target Consultants**
+- **Profile**: Mid-career professionals, bootcamp graduates, tech-adjacent workers
+- **Current State**: Aspiring AI consultants lacking practical experience
+- **Goal**: Build credible portfolio and access high-value client work
+- **Market Size**: 100K+ aspiring AI/automation consultants globally
 
-### **Contributing**
-We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md) for details.
+### **Target Clients (via ENTELECH)**
+- **Profile**: Enterprise SaaS companies, SMBs needing automation, RevOps departments
+- **Current State**: Need AI features but lack in-house expertise
+- **Goal**: Implement AI agents, workflow automation, custom integrations
+- **Market Size**: $50B+ AI services market
 
-### **Running Tests**
-```bash
-# Backend tests
-cd backend && npm test
-
-# Frontend tests
-cd frontend && npm test
-
-# End-to-end tests
-npm run test:e2e
-```
+### **Competitive Advantage**
+- ✅ **Training + Placement**: Not just a talent marketplace—we create the talent
+- ✅ **Quality Vetting**: Rigorous certification ensures reliable implementations
+- ✅ **Ecosystem Integration**: Seamless connection with ENTELECH client pipeline
+- ✅ **Service Flexibility**: DFY, DIY, and Hybrid models meet diverse client needs
+- ✅ **Network Effects**: More consultants → better matching → more clients → more consultants
 
 ---
 
-## 🔒 **Security & Compliance**
+## 🗺️ **Roadmap**
 
-- 🛡️ **Data Protection**: GDPR compliant with data encryption
-- 🔐 **Authentication**: JWT + OAuth2 with Discord integration
-- 🏰 **Multi-Tenant Security**: Row-level security and data isolation
-- 📋 **Audit Logging**: Comprehensive activity tracking
-- 🔍 **Regular Security Audits**: Automated vulnerability scanning
+### **Phase 1: MVP Platform** (Q1 2025)
+- ✅ Talent recruitment pipeline
+- ✅ Basic training curriculum (Claude API, n8n, enterprise patterns)
+- ✅ Vetting criteria and certification process
+- ✅ Job board for ENTELECH engagements
+- ✅ Performance tracking system
 
----
+### **Phase 2: Scale Operations** (Q2 2025)
+- 🚧 Expand training catalog (advanced AI agents, custom software)
+- 🚧 Automated matching engine for consultant-engagement pairing
+- 🚧 Mentorship network with experienced consultants
+- 🚧 Mobile app for consultants
 
-## 📈 **Roadmap**
+### **Phase 3: Platform Expansion** (Q3 2025)
+- 📅 Open marketplace beyond ENTELECH (other agencies can source talent)
+- 📅 Advanced analytics and KPI dashboards
+- 📅 Consultant specialization tracks (vertical industries, tech stacks)
+- 📅 Community features (forums, knowledge sharing)
 
-### **Phase 1: MVP Launch** (Q1 2024)
-- ✅ Multi-tenant Discord bot engine
-- ✅ Basic subscription management
-- ✅ Customer onboarding flow
-- ✅ Admin dashboard
-
-### **Phase 2: Growth Features** (Q2 2024)
-- 🚧 Advanced training platform
-- 🚧 Job placement marketplace
-- 🚧 Mobile applications
-- 🚧 Advanced analytics
-
-### **Phase 3: Enterprise** (Q3 2024)
-- 📅 White-label solutions
-- 📅 Enterprise integrations
-- 📅 Advanced automation
-- 📅 Global expansion
-
-### **Phase 4: Platform** (Q4 2024)
-- 📅 Marketplace for add-ons
-- 📅 Third-party integrations
-- 📅 AI-powered optimization
-- 📅 IPO preparation
+### **Phase 4: Ecosystem Maturity** (Q4 2025)
+- 📅 Global consultant network (multi-region support)
+- 📅 Enterprise partnerships (direct placements at Fortune 500)
+- 📅 White-label training programs for other agencies
+- 📅 IPO-ready operations and governance
 
 ---
 
-## 🤝 **Support & Community**
+## 🤝 **Partnership Model**
 
-- 📧 **Email**: support@communityos.io
-- 💬 **Discord**: [Join our community](https://discord.gg/communityos)
-- 📖 **Documentation**: [docs.communityos.io](https://docs.communityos.io)
-- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/communityos/platform/issues)
-- 💡 **Feature Requests**: [GitHub Discussions](https://github.com/communityos/platform/discussions)
+### **ENTELECH Client Engagement**
+1. ENTELECH secures consulting client
+2. Client needs AI implementation (agentic features, automation, custom builds)
+3. ENTELECH requests consultant from AIIA network
+4. AIIA provides vetted consultant matching client needs
+5. Consultant delivers (DFY, DIY, or Hybrid)
+6. Revenue split per partnership agreement
+
+### **Revenue Split Example**
+- **Client pays ENTELECH**: $50K for AI automation project
+- **ENTELECH retains**: 30% ($15K) for client acquisition and management
+- **AIIA consultant receives**: 50% ($25K) for implementation work
+- **AIIA platform fee**: 20% ($10K) for training, vetting, and placement
+
+### **Partner Selection**
+- ENTELECH partners (from AIIA network) receive equity or revshare in client engagements
+- Partners selected based on: track record, specialization, availability, client fit
+- Long-term partnerships built on successful delivery and trust
+
+---
+
+## 📄 **Documentation**
+
+- **Training Curriculum**: See [docs/training/](./docs/training/)
+- **Vetting Process**: See [docs/vetting/](./docs/vetting/)
+- **Consultant Handbook**: See [docs/consultant-handbook/](./docs/consultant-handbook/)
+- **API Documentation**: See [docs/api/](./docs/api/)
+- **Business Model Details**: See [docs/BUSINESS_MODEL.md](./docs/BUSINESS_MODEL.md)
+
+---
+
+## 🌟 **Get Started**
+
+### **For Aspiring Consultants**
+1. Apply to AIIA training program
+2. Complete AI implementation curriculum
+3. Build portfolio project and pass vetting
+4. Get certified and join consultant network
+5. Access ENTELECH client engagements
+
+### **For ENTELECH Partners**
+1. Sign partnership agreement
+2. Submit client engagement details
+3. Request consultant from AIIA network
+4. Review consultant profile and vetting report
+5. Engage consultant for client delivery
+
+---
+
+## 📧 **Contact**
+
+- **Email**: talent@aiia.io
+- **Website**: [aiia.io](https://aiia.io)
+- **Documentation**: [docs.aiia.io](https://docs.aiia.io)
+- **ENTELECH Partnership**: [entelech.net/partners](https://entelech.net/partners)
 
 ---
 
@@ -291,20 +342,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 🌟 **Show Your Support**
-
-If you find CommunityOS valuable, please:
-- ⭐ Star this repository
-- 🐦 Follow us on [Twitter](https://twitter.com/communityos)
-- 💬 Join our [Discord community](https://discord.gg/communityos)
-- 📧 Subscribe to our [newsletter](https://communityos.io/newsletter)
-
----
-
 <div align="center">
 
-**Built with ❤️ by the CommunityOS Team**
+**Built with ❤️ by the AIIA Team**
 
-[Website](https://communityos.io) • [Documentation](./docs) • [Blog](https://blog.communityos.io) • [Discord](https://discord.gg/communityos)
+[AIIA](https://aiia.io) • [ENTELECH](https://entelech.net) • [ECHELON](https://echelon.ai) • [Documentation](./docs)
 
 </div>
